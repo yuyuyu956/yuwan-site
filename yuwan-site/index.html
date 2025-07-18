@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>材料化学成分查询</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; background: #f9f9f9; }
+    h1 { color: #333; }
+    input { padding: 8px; width: 300px; font-size: 16px; }
+    table { margin-top: 20px; border-collapse: collapse; width: 100%; max-width: 600px; }
+    th, td { padding: 8px 12px; border: 1px solid #ccc; text-align: left; }
+    #result { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>🔍 材料化学成分查询</h1>
+  <input type="text" id="searchBox" placeholder="请输入材料名称，如 304不锈钢" oninput="searchMaterial()">
+  <div id="result"></div>
+  <script>
+    const materials = {'304不锈钢': {'Fe': '余量', 'Cr': '18.0–20.0%', 'Ni': '8.0–10.5%', 'Mn': '≤2.0%', 'Si': '≤1.0%', 'C': '≤0.08%', 'P': '≤0.045%', 'S': '≤0.03%'}, '6061铝合金': {'Al': '余量', 'Mg': '0.8–1.2%', 'Si': '0.4–0.8%', 'Fe': '≤0.7%', 'Cu': '0.15–0.4%', 'Cr': '0.04–0.35%', 'Zn': '≤0.25%', 'Ti': '≤0.15%'}, '黄铜 (H62)': {'Cu': '60.5–63.5%', 'Zn': '余量', 'Pb': '≤0.08%', 'Fe': '≤0.15%'}};
+
+    function searchMaterial() {
+      const query = document.getElementById("searchBox").value.trim();
+      const resultBox = document.getElementById("result");
+      if (materials[query]) {
+        let html = "<h2>" + query + " 的主要成分</h2><table><tr><th>元素</th><th>含量</th></tr>";
+        for (let el in materials[query]) {
+          html += "<tr><td>" + el + "</td><td>" + materials[query][el] + "</td></tr>";
+        }
+        html += "</table>";
+        resultBox.innerHTML = html;
+      } else {
+        resultBox.innerHTML = query ? "❌ 未找到该材料信息" : "";
+      }
+    }
+  </script>
+</body>
+</html>
