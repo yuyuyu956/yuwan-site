@@ -2,35 +2,364 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>材料化学成分查询</title>
+  <title>材料化学成分查询 & 食品添加剂查询</title>
   <style>
-    body { font-family: sans-serif; padding: 2em; background: #f9f9f9; }
-    h1 { color: #333; }
-    input { padding: 8px; width: 300px; font-size: 16px; }
-    table { margin-top: 20px; border-collapse: collapse; width: 100%; max-width: 600px; }
-    th, td { padding: 8px 12px; border: 1px solid #ccc; text-align: left; }
-    #result { margin-top: 20px; }
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      background: #e3f2fd;
+    }
+    h1, h2.main-title {
+      color: #333;
+      font-size: 2em;
+      margin-bottom: 0.7em;
+    }
+    input {
+      padding: 8px;
+      width: 300px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 600px;
+    }
+    th, td {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    #result, #additiveResult {
+      margin-top: 20px;
+    }
+    .section-title {
+      margin-top: 32px;
+      font-size: 2em;
+      color: #333;
+      font-weight: bold;
+    }
+    .tip {
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .compare-table {
+      margin-top: 16px;
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 800px;
+      background: #fff;
+    }
+    .compare-table th, .compare-table td {
+      border: 1px solid #90caf9;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .compare-title {
+      font-size: 1.2em;
+      margin-top: 22px;
+      color: #1976d2;
+      font-weight: bold;
+    }
+    .science-block {
+      background: #fffde7;
+      border: 1px solid #ffe082;
+      padding: 18px 20px;
+      margin: 24px 0 32px 0;
+      border-radius: 6px;
+      color: #444;
+      box-shadow: 0 2px 6px #ffe08233;
+    }
+    .science-block strong {
+      color: #e65100;
+    }
+    .science-title {
+      font-size: 1.2em;
+      color: #e65100;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .science-list {
+      margin: 10px 0 18px 0;
+      padding-left: 18px;
+    }
+    .science-list li {
+      margin-bottom: 4px;
+      line-height: 1.7;
+    }
+    .search-ok {
+      margin-top: 18px;
+      color: #000;
+      font-size: 1.3em;
+      text-align: center;
+      font-family: "Consolas", "Monaco", "monospace";
+    }
   </style>
 </head>
 <body>
-  <h1>🔍 材料化学成分查询</h1>
-  <input type="text" id="searchBox" placeholder="请输入材料名称，如 304不锈钢" oninput="searchMaterial()">
+  <h1 class="main-title">🔍 查询物品或材料成分，了解材质特性与对比信息（辅助选材）</h1>
+  <input type="text" id="searchBox" placeholder="请输入关键词，如 塑料水杯、行李箱、PC、PP" oninput="searchMaterialSmart()">
   <div id="result"></div>
+  <h1 class="section-title">🔍 查询配料添加剂成分，了解用途与健康影响。（健康参考）</h1>
+  <input type="text" id="additiveBox" placeholder="请输入关键词，如 亚硝酸钠、三氯蔗糖、乳酸、丙酸钙、硝酸" oninput="searchAdditiveSmart()">
+  <div id="additiveResult"></div>
+  <div class="tip">你可以这样输入，“PC材料耐高温吗” 、“手机壳”、“筷子”或者直接搜索材质“ABS”、“PP”、“PE”，或查询食品添加剂“谷氨酸钠”、“乳酸”、“阿斯巴甜”、“三氯蔗糖”、“硝酸”、“硝”、“亚硝”等，就可以获取相关信息啦。</div>
+  <div class="tip">还不够人性化，正在加紧完善敬请期待(ง🔥_🔥)ง ٩(ง˙∇˙)ว✧⁺⸜( •⌄• )⸝⁺✧   </div>
   <script>
-    const materials = {'304不锈钢': {'Fe': '余量', 'Cr': '18.0–20.0%', 'Ni': '8.0–10.5%', 'Mn': '≤2.0%', 'Si': '≤1.0%', 'C': '≤0.08%', 'P': '≤0.045%', 'S': '≤0.03%'}, '6061铝合金': {'Al': '余量', 'Mg': '0.8–1.2%', 'Si': '0.4–0.8%', 'Fe': '≤0.7%', 'Cu': '0.15–0.4%', 'Cr': '0.04–0.35%', 'Zn': '≤0.25%', 'Ti': '≤0.15%'}, '黄铜 (H62)': {'Cu': '60.5–63.5%', 'Zn': '余量', 'Pb': '≤0.08%', 'Fe': '≤0.15%'}};
+    // ========= 材料和场景映射 ==========
+    const materials = {
+      '304不锈钢': { '成分': { 'Fe': '余量', 'Cr': '18.0–20.0%', 'Ni': '8.0–10.5%', 'Mn': '≤2.0%', 'Si': '≤1.0%', 'C': '≤0.08%', 'P': '≤0.045%', 'S': '≤0.03%' }, '特性': '耐腐蚀性好，机械性能优，易加工，常用于餐具、医疗器械、筷子。耐高温至800°C。' },
+      '316不锈钢': { '成分': { 'Fe': '余量', 'Cr': '16.0–18.0%', 'Ni': '10.0–14.0%', 'Mo': '2.0–3.0%', 'Mn': '≤2.0%', 'Si': '≤1.0%', 'C': '≤0.08%', 'P': '≤0.045%', 'S': '≤0.03%' }, '特性': '加入Mo后耐蚀性更优，适用于化工、海洋环境、医疗级筷子。' },
+      '6061铝合金': { '成分': { 'Al': '余量', 'Mg': '0.8–1.2%', 'Si': '0.4–0.8%', 'Cu': '0.15–0.4%', 'Cr': '0.04–0.35%', 'Zn': '≤0.25%', 'Fe': '≤0.7%' }, '特性': '强度适中，易加工，耐腐蚀，适合结构件、车架、部分行李箱框架。' },
+      '7075铝合金': { '成分': { 'Al': '余量', 'Zn': '5.1–6.1%', 'Mg': '2.1–2.9%', 'Cu': '1.2–2.0%', 'Cr': '≤0.28%', 'Fe': '≤0.5%' }, '特性': '高强度铝合金，常用于航空、军事领域、部分高端行李箱。' },
+      'PC材料': { '成分': { '聚碳酸酯': '高分子聚合物' }, '特性': '耐高温（约120°C）、高透明性、抗冲击，常用于水杯、婴儿奶瓶、行李箱外壳、手机壳。' },
+      'PP材料': { '成分': { '聚丙烯': '高分子聚合物' }, '特性': '耐热性优（约120°C）、耐腐蚀、轻质、无毒，常用于水杯、微波餐盒、打包盒、筷子、婴儿用品。' },
+      'PPSU材料': { '成分': { '聚亚苯基砜': '高分子聚合物' }, '特性': '耐高温（约180°C），耐冲击，安全性高，常用于高端婴儿奶瓶、医疗器械。' },
+      'Tritan材料': { '成分': { '共聚酯': '高分子聚合物，主要为Eastman公司专利' }, '特性': '高透明性，耐热性好（约110°C），不含双酚A，安全环保，常用于高端水杯、奶瓶、部分高端打包盒。' },
+      'ABS塑料': { '成分': { '丙烯腈': '20-30%', '丁二烯': '30-40%', '苯乙烯': '40-50%' }, '特性': '韧性好，易加工，表面光滑，常用于玩具、家电外壳、行李箱、手机壳。耐热性一般。' },
+      '聚乙烯（PE）': { '成分': { '聚乙烯': '高分子聚合物' }, '特性': '耐腐蚀、耐低温，柔韧性好，广泛用于管材、包装膜、打包盒、部分衣物纤维。耐热性较差（80°C以下）。' },
+      '聚酯（PET）': { '成分': { '聚对苯二甲酸乙二醇酯': '高分子聚合物' }, '特性': '透明度高，耐热性好，常用于饮料瓶、纤维、衣服面料。' },
+      '尼龙（PA）': { '成分': { '聚酰胺': '高分子聚合物' }, '特性': '耐磨、强度高，吸湿性强，常用于衣服、行李箱、打包盒、筷子。' },
+      '聚氯乙烯（PVC）': { '成分': { '聚氯乙烯': '高分子聚合物' }, '特性': '耐化学性强，绝缘性好，广泛应用于管材、电缆、部分打包盒和鞋服。' },
+      '聚甲醛（POM）': { '成分': { '聚甲醛': '高分子聚合物' }, '特性': '高硬度、高耐磨，常用于齿轮、机械零件、部分筷子。' },
+      '聚丙烯腈纤维（腈纶）': { '成分': { '聚丙烯腈': '高分子聚合物' }, '特性': '保暖、轻质、常用于针织衣物、外套。' },
+      '铜': { '成分': { 'Cu': '≥99.9%' }, '特性': '导电、导热性极佳，抗菌，常用于电线、水管、装饰。' },
+      '铝': { '成分': { 'Al': '≥99.0%' }, '特性': '密度小，耐腐蚀，易加工，广泛用于建筑、交通、部分行李箱框架。' },
+      '钛合金': { '成分': { 'Ti': '余量', 'Al': '5-6%', 'V': '4%' }, '特性': '强度高，耐腐蚀，轻质，广泛用于航空、医疗器械、部分高端手机壳。' },
+      '石英玻璃': { '成分': { 'SiO2': '≥99.9%' }, '特性': '耐高温、耐腐蚀、光学性能好，适合实验室器材。' },
+      '聚四氟乙烯（PTFE/特氟龙）': { '成分': { '聚四氟乙烯': '高分子聚合物' }, '特性': '耐高温、耐腐蚀、极低摩擦系数，常用于密封件、涂层、部分防水衣服。' },
+      '消毒水': { '成分': { '次氯酸钠': 'NaClO 或含氯消毒剂', '乙醇': '部分消毒水含乙醇' }, '特性': '高效杀菌，常用于环境、物品表面消毒。使用需避免与酸性物质混合。' }
+    };
 
-    function searchMaterial() {
-      const query = document.getElementById("searchBox").value.trim();
-      const resultBox = document.getElementById("result");
-      if (materials[query]) {
-        let html = "<h2>" + query + " 的主要成分</h2><table><tr><th>元素</th><th>含量</th></tr>";
-        for (let el in materials[query]) {
-          html += "<tr><td>" + el + "</td><td>" + materials[query][el] + "</td></tr>";
+    const cupCompare = [
+      { name: "PC", feature: "高透明性，耐高温（约120°C），耐冲击，价格较低。部分产品含双酚A，婴幼儿慎用。", safe: "符合国家食品级标准时安全。" },
+      { name: "PP", feature: "轻质，耐热性优（约120°C），不含双酚A，安全无毒，价格低，微波适用。", safe: "安全，适合婴儿用品。" },
+      { name: "PPSU", feature: "耐高温（约180°C），耐冲击，安全性高，无双酚A，常用于高端婴儿奶瓶，价格高。", safe: "极高安全性，适合婴幼儿反复消毒。" },
+      { name: "Tritan", feature: "高透明性，耐热（约110°C），无双酚A，环保，兼具PC和PP优点，价格较高。", safe: "安全环保，适合各类水杯和婴儿用品。" }
+    ];
+
+    const itemKeywords = {
+      "塑料水杯": ["PC材料","PP材料","PPSU材料","Tritan材料"],
+      "奶瓶": ["PC材料","PP材料","PPSU材料","Tritan材料"],
+      "打包盒": ["PP材料","PE材料","Tritan材料","PVC材料"],
+      "行李箱": ["PC材料","ABS塑料","6061铝合金","7075铝合金","尼龙（PA）"],
+      "手机壳": ["PC材料","ABS塑料","硅胶","POM材料","钛合金"],
+      "筷子": ["304不锈钢","316不锈钢","PP材料","尼龙（PA）","聚甲醛（POM）"],
+      "衣服": ["聚酯（PET）","尼龙（PA）","聚丙烯腈纤维（腈纶）","聚乙烯（PE）","聚四氟乙烯（PTFE/特氟龙）"],
+      "消毒水": ["消毒水"]
+    };
+
+    const additives = {
+      '硝酸钠': {
+        '用途': '防腐剂、保色剂，用于腌肉、香肠、火腿等加工肉制品。',
+        '危害': '过量摄入有中毒风险，可在体内转化为亚硝酸钠，进一步生成致癌物亚硝胺。'
+      },
+      '亚硝酸钠': {
+        '用途': '防腐剂、保色剂，常用于腌制肉类、加工肉制品。',
+        '危害': '毒性较强，摄入过量有致癌风险和急性中毒风险。'
+      },
+      '柠檬酸': {
+        '用途': '酸度调节剂，防腐剂，常用于饮料、糖果、果酱等。',
+        '危害': '过量可致胃肠不适，影响钙代谢，增加肾结石风险。'
+      },
+      '苯甲酸钠': {
+        '用途': '防腐剂，用于果酱、饮料、酱油、调味品。',
+        '危害': '过量可能引起过敏反应，影响肝脏功能。'
+      },
+      '阿斯巴甜': {
+        '用途': '甜味剂，代糖，用于无糖饮料、糖果、口香糖。',
+        '危害': '苯酮尿症患者禁用，过量可能影响代谢。'
+      },
+      '三氯蔗糖': {
+        '用途': '高强度甜味剂，常用于饮料、糖果、烘焙食品等，甜度约为蔗糖的600倍，低热量。',
+        '危害': '一般认为安全，但部分研究提示过量摄入可能影响肠道菌群或有轻微代谢风险。'
+      },
+      '山梨酸钾': {
+        '用途': '防腐剂，常用于糕点、果脯、乳制品。',
+        '危害': '高剂量可能导致肠胃不适。'
+      }
+    };
+
+    const scienceHtml = `
+      <div class="science-block">
+        <div class="science-title">场景举例：腌制肉类与亚硝酸盐的风险</div>
+        <div><strong>背景：</strong>我们在日常生活中吃到的腌肉、香肠、火腿等加工肉制品，有时会加入<mark>硝酸钠（NaNO₃）</mark>作为防腐剂和保色剂。</div>
+        <ul class="science-list">
+          <li>✅ <strong>硝酸钠的作用：</strong></li>
+          <li>抑制肉毒杆菌等致病菌的生长</li>
+          <li>使肉类颜色更鲜红，口感更佳</li>
+          <li>是合法允许使用的食品添加剂（但有使用限量）</li>
+        </ul>
+        <ul class="science-list">
+          <li>⚠️ <strong>潜在风险：硝酸钠 → 亚硝酸钠的转化</strong></li>
+          <li>在存放过程中（特别是高温或长时间腌制），硝酸钠可能被还原成亚硝酸钠（NaNO₂）：</li>
+          <li style="margin-left:14px;font-family:monospace;">2 NaNO₃ → 高温/还原环境 → 2 NaNO₂ + O₂</li>
+          <li>而亚硝酸钠是一种更具毒性的物质，在胃酸环境中还可能与胺类反应生成亚硝胺（致癌物）。</li>
+        </ul>
+        <ul class="science-list">
+          <li>✅ <strong>食品安全建议：</strong></li>
+          <li>适量添加食品添加剂，遵循国家标准。</li>
+          <li>腌肉应放在阴凉通风处，避免高温。</li>
+          <li>不要长时间储存腌制食品。</li>
+          <li>儿童不宜食用过多腌制香肠、火腿等加工肉类。</li>
+          <li>多吃富含维生素C的水果，有助于抑制亚硝胺的生成。</li>
+        </ul>
+        <div style="margin-top:10px;">
+          📌 <strong>小科普结尾语：</strong><br>
+          硝酸钠本身并不一定危险，关键在于保存和加工方式。科学使用食品添加剂，才能让它们“保鲜”而不是“伤身”。
+        </div>
+      </div>
+    `;
+
+    function shouldShowScience(query) {
+      const kw = [
+        '硝酸','亚硝酸','硝酸钠','亚硝酸钠','亚硝盐',
+        'nitrite','nitrate','腌肉','香肠','火腿','腌制肉','致癌物','亚硝胺','硝'
+      ];
+      return kw.some(k => query.includes(k));
+    }
+
+    function fuzzyMatchAdditives(query) {
+      query = query.toLowerCase();
+      let results = [];
+      for (let key in additives) {
+        if (key.toLowerCase().includes(query) || query.includes(key.toLowerCase())) {
+          results.push(key);
+        } else {
+          let alias = key.replace(/（[^）)]*）/g, '').replace(/钠|酸|素|蔗糖/g, '').trim();
+          if (alias && (query.includes(alias.toLowerCase()) || alias.toLowerCase().includes(query))) {
+            results.push(key);
+          }
         }
-        html += "</table>";
+      }
+      if (shouldShowScience(query) && !results.includes('科普')) results.push('科普');
+      return results;
+    }
+
+    function searchAdditiveSmart() {
+      const query = document.getElementById("additiveBox").value.trim().toLowerCase();
+      const resultBox = document.getElementById("additiveResult");
+      if (!query) { resultBox.innerHTML = ""; return; }
+      const matches = fuzzyMatchAdditives(query);
+      let html = "";
+      matches.forEach(additiveKey => {
+        if (additiveKey === '科普') {
+          html += scienceHtml;
+        } else if (additives[additiveKey]) {
+          const additive = additives[additiveKey];
+          html += `<div class="tip">已识别“${additiveKey}”相关信息：</div>
+            <h2>${additiveKey} 信息</h2>
+            <table>
+              <tr><th>用途</th><td>${additive['用途']}</td></tr>
+              <tr><th>过量危害</th><td>${additive['危害']}</td></tr>
+            </table><hr>`;
+        }
+      });
+      // 只有有结果时才显示提示
+      if (html) html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
+      resultBox.innerHTML = html || "未识别相关添加剂...";
+    }
+
+    function fuzzyMatchMaterials(query) {
+      query = query.toLowerCase();
+      let results = [];
+      for (let key in materials) {
+        if (key.toLowerCase().includes(query) || query.includes(key.toLowerCase())) {
+          results.push(key);
+        } else {
+          let alias = key.replace(/[（(][^）)]*[）)]/g, '').replace(/材料|塑料|合金|不锈钢|纤维/g, '').trim();
+          if (alias && (query.includes(alias.toLowerCase()) || alias.toLowerCase().includes(query))) {
+            results.push(key);
+          }
+        }
+      }
+      for (let item in itemKeywords) {
+        if (query.includes(item)) {
+          itemKeywords[item].forEach(k=>{ if(results.indexOf(k)===-1) results.push(k); });
+        }
+      }
+      return results;
+    }
+    function searchMaterialSmart() {
+      const query = document.getElementById("searchBox").value.trim().toLowerCase();
+      const resultBox = document.getElementById("result");
+      if (!query) { resultBox.innerHTML = ""; return; }
+      let html = "";
+      if (query.includes("水杯") || query.includes("奶瓶") || query.includes("塑料杯")) {
+        html = `<div class="compare-title">常见塑料水杯/奶瓶材质对比</div>
+        <table class="compare-table">
+          <tr>
+            <th>材质</th>
+            <th>主要特性</th>
+            <th>安全性</th>
+          </tr>`;
+        cupCompare.forEach(row => {
+          html += `<tr>
+            <td>${row.name}</td>
+            <td>${row.feature}</td>
+            <td>${row.safe}</td>
+          </tr>`;
+        });
+        html += `</table>
+        <div class="tip">已查询常见塑料水杯/奶瓶材质PC、PP、PPSU、Tritan。</div>`;
+        ['PC材料','PP材料','PPSU材料','Tritan材料'].forEach(key=>{
+          if(materials[key]) {
+            html += `<h2>${key}</h2>
+              <table><tr><th>成分</th><td>${Object.keys(materials[key].成分).map(k=>`${k}: ${materials[key].成分[k]}`).join('， ')}</td></tr>
+              <tr><th>特性</th><td>${materials[key].特性}</td></tr></table>`;
+          }
+        });
+        html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
+        resultBox.innerHTML = html;
+        return;
+      }
+
+      for(const item in itemKeywords) {
+        if(query.includes(item) && item !== "塑料水杯" && item !== "奶瓶" && item !== "塑料杯") {
+          html = `<div class="tip">已识别“${item}”相关常见材质：</div>`;
+          itemKeywords[item].forEach(key => {
+            if(materials[key]) {
+              html += `<h2>${key}</h2>
+                <table><tr><th>成分</th><td>${Object.keys(materials[key].成分).map(k=>`${k}: ${materials[key].成分[k]}`).join('， ')}</td></tr>
+                <tr><th>特性</th><td>${materials[key].特性}</td></tr></table>`;
+            } else if(key === "消毒水") {
+              html += `<h2>消毒水</h2>
+                <table><tr><th>主要组分</th><td>次氯酸钠或乙醇</td></tr>
+                <tr><th>常见特性</th><td>高效杀菌，常用于环境、物品表面消毒。使用需避免与酸性物质混合。</td></tr></table>`;
+            } else if(key === "硅胶") {
+              html += `<h2>硅胶</h2>
+                <table><tr><th>主要组分</th><td>聚硅氧烷</td></tr>
+                <tr><th>常见特性</th><td>柔软、耐高温、环保、用于手机壳、厨具、医疗器械等。</td></tr></table>`;
+            } else if(key === "POM材料") {
+              html += `<h2>聚甲醛（POM）</h2>
+                <table><tr><th>主要组分</th><td>聚甲醛高分子聚合物</td></tr>
+                <tr><th>常见特性</th><td>高硬度、高耐磨，用于机械零件、部分手机壳、筷子。</td></tr></table>`;
+            }
+          });
+          html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
+          resultBox.innerHTML = html;
+          return;
+        }
+      }
+      const matches = fuzzyMatchMaterials(query);
+      if (matches.length > 0) {
+        matches.forEach(materialKey => {
+          const material = materials[materialKey];
+          html += `<div class="tip">已识别“${materialKey}”相关信息：</div>
+          <h2>${materialKey} 的主要成分</h2>
+          <table><tr><th>元素/组分</th><th>含量</th></tr>`;
+          for (let el in material['成分']) {
+            html += `<tr><td>${el}</td><td>${material['成分'][el]}</td></tr>`;
+          }
+          html += `</table>
+          <h3>常见特性</h3>
+          <div>${material['特性']}</div><hr>`;
+        });
+        html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
         resultBox.innerHTML = html;
       } else {
-        resultBox.innerHTML = query ? "鱼丸还在采集中..." : "";
+        resultBox.innerHTML = "未识别相关材料，鱼丸还在采集中...";
       }
     }
   </script>
