@@ -104,7 +104,7 @@
   <h1 class="section-title">🔍 查询配料添加剂成分，了解用途与健康影响。（健康参考）</h1>
   <input type="text" id="additiveBox" placeholder="请输入关键词，如 亚硝酸钠、三氯蔗糖、乳酸、丙酸钙、硝酸" oninput="searchAdditiveSmart()">
   <div id="additiveResult"></div>
-  <div class="tip">你可以这样输入，“PC材料耐高温吗” 、“手机壳”、“筷子”或者直接搜索材质“ABS”、“PP”、“PE”，或查询食品添加剂“谷氨酸钠”、“乳酸”、“阿斯巴甜”、“三氯蔗糖”、“硝酸”、“硝”、“亚硝”等，就可以获取相关信息啦。</div>
+  <div class="tip">你可以这样输入，“PC材料耐高温吗” 、“手机壳”、“筷子”或者直接搜索材质“ABS”、“PP”、“PE”，或查询食品添加剂“谷氨酸钠”、“乳酸”、“三氯蔗糖”、“硝酸钠”等，就可以获取相关信息啦。</div>
   <div class="tip">还不够人性化，正在加紧完善敬请期待(ง🔥_🔥)ง ٩(ง˙∇˙)ว✧⁺⸜( •⌄• )⸝⁺✧   </div>
   <script>
     // ========= 材料和场景映射 ==========
@@ -215,7 +215,7 @@
     function shouldShowScience(query) {
       const kw = [
         '硝酸','亚硝酸','硝酸钠','亚硝酸钠','亚硝盐',
-        'nitrite','nitrate','腌肉','香肠','火腿','腌制肉','致癌物','亚硝胺','硝'
+        'nitrite','nitrate','腌肉','香肠','火腿','腌制肉','致癌物','亚硝胺'
       ];
       return kw.some(k => query.includes(k));
     }
