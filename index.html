@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>材料化学成分查询 & 食品添加剂查询</title>
   <style>
+    /* 样式保持不变 */
     body {
       font-family: sans-serif;
       padding: 2em;
@@ -104,7 +105,7 @@
   <h1 class="section-title">🔍 查询配料添加剂成分，了解用途与健康影响。（健康参考）</h1>
   <input type="text" id="additiveBox" placeholder="请输入关键词，如 亚硝酸钠、三氯蔗糖、乳酸、丙酸钙、硝酸" oninput="searchAdditiveSmart()">
   <div id="additiveResult"></div>
-  <div class="tip">你可以这样输入，“PC材料耐高温吗” 、“手机壳”、“筷子”或者直接搜索材质“ABS”、“PP”、“PE”，或查询食品添加剂“谷氨酸钠”、“乳酸”、“三氯蔗糖”、“硝酸钠”等，就可以获取相关信息啦。</div>
+  <div class="tip">您可以这样输入，"PC材料耐高温吗"、"手机壳"、"筷子"或者直接搜索材质"ABS"、"PP"、"PE"，或查询食品添加剂"谷氨酸钠"、"乳酸"、"三氯蔗糖"、"硝酸钠"等，就可以获取相关信息啦。</div>
   <div class="tip">还不够人性化，正在加紧完善敬请期待(ง🔥_🔥)ง ٩(ง˙∇˙)ว✧⁺⸜( •⌄• )⸝⁺✧   </div>
   <script>
     // ========= 材料和场景映射 ==========
@@ -129,7 +130,24 @@
       '钛合金': { '成分': { 'Ti': '余量', 'Al': '5-6%', 'V': '4%' }, '特性': '强度高，耐腐蚀，轻质，广泛用于航空、医疗器械、部分高端手机壳。' },
       '石英玻璃': { '成分': { 'SiO2': '≥99.9%' }, '特性': '耐高温、耐腐蚀、光学性能好，适合实验室器材。' },
       '聚四氟乙烯（PTFE/特氟龙）': { '成分': { '聚四氟乙烯': '高分子聚合物' }, '特性': '耐高温、耐腐蚀、极低摩擦系数，常用于密封件、涂层、部分防水衣服。' },
-      '消毒水': { '成分': { '次氯酸钠': 'NaClO 或含氯消毒剂', '乙醇': '部分消毒水含乙醇' }, '特性': '高效杀菌，常用于环境、物品表面消毒。使用需避免与酸性物质混合。' }
+      '消毒水': { '成分': { '次氯酸钠': 'NaClO 或含氯消毒剂', '乙醇': '部分消毒水含乙醇' }, '特性': '高效杀菌，常用于环境、物品表面消毒。使用需避免与酸性物质混合。' },
+      "HDPE材料": {
+  "成分": { "高密度聚乙烯": "高分子聚合物" },
+  "特性": "密度高、耐冲击、耐紫外线、化学稳定性好，是制造经济型安全帽、容器、管道常用材料。"
+},
+"玻璃钢（FRP）": {
+  "成分": { "玻璃纤维": "增强材料", "热固性树脂": "基体（如不饱和聚酯树脂）" },
+  "特性": "高强度、轻质、耐腐蚀、耐热，常用于工业安全帽、电力设备外壳。"
+},
+"碳纤维复合材料": {
+  "成分": { "碳纤维": "增强材料", "树脂": "基体" },
+  "特性": "极轻质但强度超高，抗疲劳和绝缘性好，广泛用于航空航天、安全防护领域。"
+},
+"Kevlar芳纶": {
+  "成分": { "对苯二胺与对苯二甲酰氯缩聚物": "芳香族聚酰胺（芳纶）" },
+  "特性": "强度高、抗切割、耐热，常用于防弹衣、防刺服和军用防护头盔。"
+}
+
     };
 
     const cupCompare = [
@@ -137,6 +155,19 @@
       { name: "PP", feature: "轻质，耐热性优（约120°C），不含双酚A，安全无毒，价格低，微波适用。", safe: "安全，适合婴儿用品。" },
       { name: "PPSU", feature: "耐高温（约180°C），耐冲击，安全性高，无双酚A，常用于高端婴儿奶瓶，价格高。", safe: "极高安全性，适合婴幼儿反复消毒。" },
       { name: "Tritan", feature: "高透明性，耐热（约110°C），无双酚A，环保，兼具PC和PP优点，价格较高。", safe: "安全环保，适合各类水杯和婴儿用品。" }
+    ];
+
+    // 新增：安全帽材质对比数据
+    const helmetCompare = [
+      { name: "ABS塑料", feature: "高强度、耐冲击、成本低，广泛用于工业安全帽。", safe: "符合安全标准时可靠。寒冬低温环境容易开裂，避免长期暴露于极端温度。绝缘性能一般" },
+      { name: "PP材料", feature: "轻质、耐化学腐蚀，但抗冲击性略低于ABS。", safe: "安全，适用于普通防护。不适合高温环境，耐冲击性能有限。绝缘性能较低，不适合电工高压环境" },
+      { name: "PC材料", feature: "超高抗冲击性，耐高温，用于高端安全头盔。", safe: "安全性高，适合高风险作业。加油站和化工厂等含化学溶剂环境中可能被腐蚀，不宜使用。绝缘性能较好，适合部分电工作业。" },
+      { name: "PE材料", feature: "轻便、低成本，但强度较低，多用于简易头盔。", safe: "仅适用于低风险环境。绝缘性能一般，电工使用需谨慎。" },
+      { name: "HDPE（高密度聚乙烯）", feature: "柔韧性好，耐化学腐蚀，抗紫外线，价格低，广泛用于建筑类安全帽。", safe: "经济实用，适合日常施工环境。长时间暴露于强紫外线下会老化，耐热性能有限。绝缘性能较好，可用于一般电工作业。" },
+      { name: "玻璃钢（FRP）", feature: "由玻璃纤维和树脂复合，抗冲击强度高，耐热耐腐蚀，用于高风险工业环境。", safe: "强度高但相对较重，适合特殊工种。避免强烈撞击导致裂纹，不适合极寒环境。绝缘性能优异，适合高压电工作业。" },
+      { name: "碳纤维复合材料", feature: "超轻高强，电绝缘性能优异，用于高空、输电作业等对重量和绝缘要求高的场合。", safe: "价格昂贵，但性能极佳，适用于专业用途。易碎裂，避免剧烈撞击。绝缘性能极佳，非常适合电工及高压环境。" },
+      { name: "Kevlar芳纶", feature: "极高强度、耐热性佳，广泛用于军警防护装备，如防弹头盔。", safe: "军用等级安全帽材质，普通民用较少使用。防穿刺性能优异，但耐紫外线差，易老化。绝缘性能一般，非专门电工材料。" }
+
     ];
 
     const itemKeywords = {
@@ -147,7 +178,15 @@
       "手机壳": ["PC材料","ABS塑料","硅胶","POM材料","钛合金"],
       "筷子": ["304不锈钢","316不锈钢","PP材料","尼龙（PA）","聚甲醛（POM）"],
       "衣服": ["聚酯（PET）","尼龙（PA）","聚丙烯腈纤维（腈纶）","聚乙烯（PE）","聚四氟乙烯（PTFE/特氟龙）"],
-      "消毒水": ["消毒水"]
+      "消毒水": ["消毒水"],
+       "安全帽": ["ABS塑料", "PP材料", "PC材料", "PE材料", "HDPE", "玻璃钢（FRP）", "碳纤维复合材料", "Kevlar芳纶"],
+        "头盔": ["PC材料", "碳纤维复合材料", "Kevlar芳纶", "玻璃钢（FRP）", "ABS塑料"]
+      };
+
+    // 新增：物品模糊匹配关键词
+    const itemFuzzyKeywords = {
+      "水杯": ["水杯", "杯", "塑料杯", "奶瓶", "水瓶"],
+      "安全帽": ["安全帽", "头盔", "帽", "安全", "防护帽"]
     };
 
     const additives = {
@@ -178,6 +217,50 @@
       '山梨酸钾': {
         '用途': '防腐剂，常用于糕点、果脯、乳制品。',
         '危害': '高剂量可能导致肠胃不适。'
+      },
+      '谷氨酸钠': {
+        '用途': '增鲜剂，常用于汤料、方便面、调味料中，也称味精。',
+        '危害': '大剂量摄入可能引起头晕或"中餐馆综合症"，但在正常使用范围内被认为安全。'
+      },
+      '乳酸': {
+        '用途': '酸味剂、防腐剂，用于饮料、乳制品、糖果等。',
+        '危害': '高剂量可能刺激胃黏膜，对肠胃敏感者需注意。'
+      },
+      '焦亚硫酸钠': {
+        '用途': '抗氧化剂和漂白剂，常用于干果、果汁、葡萄酒。',
+        '危害': '过敏体质者可能引起哮喘、皮疹。'
+      },
+      '脱氢乙酸钠': {
+        '用途': '防腐剂，主要用于酱料、饮料等。',
+        '危害': '高剂量可能引起肝肾损害。'
+      },
+      '山梨糖醇': {
+        '用途': '甜味剂和保湿剂，常用于无糖口香糖和糖果。',
+        '危害': '大量摄入有轻泻作用，导致腹泻和胃肠胀气。'
+      },
+      '磷酸盐（如三聚磷酸钠）': {
+        '用途': '保水剂和抗结剂，常用于肉制品和海产品。',
+        '危害': '大量摄入可能影响钙磷代谢，导致骨质疏松和肾结石。'
+      },
+      '羧甲基纤维素钠（CMC）': {
+        '用途': '增稠剂和稳定剂，用于冰淇淋、果冻、饮料。',
+        '危害': '大量长期摄入可能引起肠道菌群失衡，导致腹胀或消化不良。'
+      },
+      '卡拉胶': {
+        '用途': '增稠剂和稳定剂，常用于奶制品、果冻、肉制品。',
+        '危害': '大量摄入可能引起消化不良和肠道不适。'
+      },
+      '抗坏血酸（维生素C）': {
+        '用途': '抗氧化剂，防止食品氧化变色。',
+        '危害': '超量摄入可能导致腹泻和肾结石。'
+      },
+      '海藻酸钠': {
+        '用途': '增稠剂和稳定剂，用于冰淇淋和果冻。',
+        '危害': '大量摄入可能引起腹胀和消化不良。'
+      },
+      '丙二醇': {
+        '用途': '溶剂、保湿剂，常用于饮料、冰淇淋、香精。',
+        '危害': '大量摄入可能引起头痛、眩晕、胃肠不适。'
       }
     };
 
@@ -207,7 +290,7 @@
         </ul>
         <div style="margin-top:10px;">
           📌 <strong>小科普结尾语：</strong><br>
-          硝酸钠本身并不一定危险，关键在于保存和加工方式。科学使用食品添加剂，才能让它们“保鲜”而不是“伤身”。
+          硝酸钠本身并不一定危险，关键在于保存和加工方式。科学使用食品添加剂，才能让它们"保鲜"而不是"伤身"。
         </div>
       </div>
     `;
@@ -248,7 +331,7 @@
           html += scienceHtml;
         } else if (additives[additiveKey]) {
           const additive = additives[additiveKey];
-          html += `<div class="tip">已识别“${additiveKey}”相关信息：</div>
+          html += `<div class="tip">已识别"${additiveKey}"相关信息：</div>
             <h2>${additiveKey} 信息</h2>
             <table>
               <tr><th>用途</th><td>${additive['用途']}</td></tr>
@@ -261,9 +344,12 @@
       resultBox.innerHTML = html || "未识别相关添加剂...";
     }
 
+    // 优化后的模糊匹配函数
     function fuzzyMatchMaterials(query) {
       query = query.toLowerCase();
       let results = [];
+      
+      // 1. 匹配材料名称
       for (let key in materials) {
         if (key.toLowerCase().includes(query) || query.includes(key.toLowerCase())) {
           results.push(key);
@@ -274,19 +360,37 @@
           }
         }
       }
+      
+      // 2. 匹配物品关键词（优化后的模糊匹配）
       for (let item in itemKeywords) {
-        if (query.includes(item)) {
-          itemKeywords[item].forEach(k=>{ if(results.indexOf(k)===-1) results.push(k); });
+        // 检查是否有预定义的模糊匹配关键词
+        if (itemFuzzyKeywords[item]) {
+          if (itemFuzzyKeywords[item].some(kw => query.includes(kw))) {
+            itemKeywords[item].forEach(k => {
+              if (!results.includes(k)) results.push(k);
+            });
+          }
+        } 
+        // 原有的完全匹配逻辑
+        else if (query.includes(item)) {
+          itemKeywords[item].forEach(k => {
+            if (!results.includes(k)) results.push(k);
+          });
         }
       }
+      
       return results;
     }
+
     function searchMaterialSmart() {
       const query = document.getElementById("searchBox").value.trim().toLowerCase();
       const resultBox = document.getElementById("result");
       if (!query) { resultBox.innerHTML = ""; return; }
+      
       let html = "";
-      if (query.includes("水杯") || query.includes("奶瓶") || query.includes("塑料杯")) {
+      
+      // 1. 检查是否查询水杯/奶瓶（使用模糊匹配）
+      if (itemFuzzyKeywords["水杯"].some(kw => query.includes(kw))) {
         html = `<div class="compare-title">常见塑料水杯/奶瓶材质对比</div>
         <table class="compare-table">
           <tr>
@@ -314,47 +418,82 @@
         resultBox.innerHTML = html;
         return;
       }
+      
+      // 2. 检查是否查询安全帽/头盔（使用模糊匹配）
+      if (itemFuzzyKeywords["安全帽"].some(kw => query.includes(kw))) {
+        html = `<div class="compare-title">常见安全帽/头盔材质对比</div>
+        <table class="compare-table">
+          <tr>
+            <th>材质</th>
+            <th>主要特性</th>
+            <th>安全性</th>
+          </tr>`;
+        helmetCompare.forEach(row => {
+          html += `<tr>
+            <td>${row.name}</td>
+            <td>${row.feature}</td>
+            <td>${row.safe}</td>
+          </tr>`;
+        });
+        html += `</table>
+        <div class="tip">已查询常见安全帽材质ABS、PP、PC、PE、HDPE、FRP、碳纤维复合材料、Kevlar芳纶。</div>`;
+        ['ABS塑料','PP材料','PC材料','PE材料',"HDPE", "玻璃钢（FRP）", "碳纤维复合材料", "Kevlar芳纶"].forEach(key=>{
+          if(materials[key]) {
+            html += `<h2>${key}</h2>
+              <table><tr><th>成分</th><td>${Object.keys(materials[key].成分).map(k=>`${k}: ${materials[key].成分[k]}`).join('， ')}</td></tr>
+              <tr><th>特性</th><td>${materials[key].特性}</td></tr></table>`;
+          }
+        });
+        html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
+        resultBox.innerHTML = html;
+        return;
+      }
 
+      // 3. 其他物品的匹配逻辑
       for(const item in itemKeywords) {
-        if(query.includes(item) && item !== "塑料水杯" && item !== "奶瓶" && item !== "塑料杯") {
-          html = `<div class="tip">已识别“${item}”相关常见材质：</div>`;
-          itemKeywords[item].forEach(key => {
-            if(materials[key]) {
-              html += `<h2>${key}</h2>
-                <table><tr><th>成分</th><td>${Object.keys(materials[key].成分).map(k=>`${k}: ${materials[key].成分[k]}`).join('， ')}</td></tr>
-                <tr><th>特性</th><td>${materials[key].特性}</td></tr></table>`;
-            } else if(key === "消毒水") {
-              html += `<h2>消毒水</h2>
-                <table><tr><th>主要组分</th><td>次氯酸钠或乙醇</td></tr>
-                <tr><th>常见特性</th><td>高效杀菌，常用于环境、物品表面消毒。使用需避免与酸性物质混合。</td></tr></table>`;
-            } else if(key === "硅胶") {
-              html += `<h2>硅胶</h2>
-                <table><tr><th>主要组分</th><td>聚硅氧烷</td></tr>
-                <tr><th>常见特性</th><td>柔软、耐高温、环保、用于手机壳、厨具、医疗器械等。</td></tr></table>`;
-            } else if(key === "POM材料") {
-              html += `<h2>聚甲醛（POM）</h2>
-                <table><tr><th>主要组分</th><td>聚甲醛高分子聚合物</td></tr>
-                <tr><th>常见特性</th><td>高硬度、高耐磨，用于机械零件、部分手机壳、筷子。</td></tr></table>`;
-            }
-          });
-          html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
-          resultBox.innerHTML = html;
-          return;
+        if(item !== "塑料水杯" && item !== "奶瓶" && item !== "安全帽" && item !== "头盔") {
+          if(query.includes(item)) {
+            html = `<div class="tip">已识别"${item}"相关常见材质：</div>`;
+            itemKeywords[item].forEach(key => {
+              if(materials[key]) {
+                html += `<h2>${key}</h2>
+                  <table><tr><th>成分</th><td>${Object.keys(materials[key].成分).map(k=>`${k}: ${materials[key].成分[k]}`).join('， ')}</td></tr>
+                  <tr><th>特性</th><td>${materials[key].特性}</td></tr></table>`;
+              } else if(key === "消毒水") {
+                html += `<h2>消毒水</h2>
+                  <table><tr><th>主要组分</th><td>次氯酸钠或乙醇</td></tr>
+                  <tr><th>常见特性</th><td>高效杀菌，常用于环境、物品表面消毒。使用需避免与酸性物质混合。</td></tr></table>`;
+              } else if(key === "硅胶") {
+                html += `<h2>硅胶</h2>
+                  <table><tr><th>主要组分</th><td>聚硅氧烷</td></tr>
+                  <tr><th>常见特性</th><td>柔软、耐高温、环保、用于手机壳、厨具、医疗器械等。</td></tr></table>`;
+              } else if(key === "POM材料") {
+                html += `<h2>聚甲醛（POM）</h2>
+                  <table><tr><th>主要组分</th><td>聚甲醛高分子聚合物</td></tr>
+                  <tr><th>常见特性</th><td>高硬度、高耐磨，用于机械零件、部分手机壳、筷子。</td></tr></table>`;
+              }
+            });
+            html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
+            resultBox.innerHTML = html;
+            return;
+          }
         }
       }
+      
+      // 4. 模糊匹配材料名称
       const matches = fuzzyMatchMaterials(query);
       if (matches.length > 0) {
         matches.forEach(materialKey => {
           const material = materials[materialKey];
-          html += `<div class="tip">已识别“${materialKey}”相关信息：</div>
-          <h2>${materialKey} 的主要成分</h2>
-          <table><tr><th>元素/组分</th><th>含量</th></tr>`;
+          html += `<div class="tip">已识别"${materialKey}"相关信息：</div>
+            <h2>${materialKey} 的主要成分</h2>
+            <table><tr><th>元素/组分</th><th>含量</th></tr>`;
           for (let el in material['成分']) {
             html += `<tr><td>${el}</td><td>${material['成分'][el]}</td></tr>`;
           }
           html += `</table>
-          <h3>常见特性</h3>
-          <div>${material['特性']}</div><hr>`;
+            <h3>常见特性</h3>
+            <div>${material['特性']}</div><hr>`;
         });
         html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
         resultBox.innerHTML = html;
@@ -365,3 +504,5 @@
   </script>
 </body>
 </html>
+
+
