@@ -104,7 +104,7 @@
   <h1 class="section-title">🔍 查询配料添加剂成分，了解用途与健康影响。（健康参考）</h1>
   <input type="text" id="additiveBox" placeholder="请输入关键词，如 亚硝酸钠、三氯蔗糖、乳酸、丙酸钙、硝酸" oninput="searchAdditiveSmart()">
   <div id="additiveResult"></div>
-  <div class="tip">你可以这样输入，“PC材料耐高温吗” 、“手机壳”、“筷子”或者直接搜索材质“ABS”、“PP”、“PE”，或查询食品添加剂“谷氨酸钠”、“乳酸”、“三氯蔗糖”、“硝酸钠”等，就可以获取相关信息啦。</div>
+  <div class="tip">您可以这样输入，“PC材料耐高温吗” 、“手机壳”、“筷子”或者直接搜索材质“ABS”、“PP”、“PE”，或查询食品添加剂“谷氨酸钠”、“乳酸”、“三氯蔗糖”、“硝酸钠”等，就可以获取相关信息啦。</div>
   <div class="tip">还不够人性化，正在加紧完善敬请期待(ง🔥_🔥)ง ٩(ง˙∇˙)ว✧⁺⸜( •⌄• )⸝⁺✧   </div>
   <script>
     // ========= 材料和场景映射 ==========
@@ -178,12 +178,20 @@
       '山梨酸钾': {
         '用途': '防腐剂，常用于糕点、果脯、乳制品。',
         '危害': '高剂量可能导致肠胃不适。'
-      }
+      },
+      '谷氨酸钠': {
+    '用途': '鲜味增强剂，用于方便面、调味料、罐头、冷冻食品等，增强鲜味。',
+    '危害': '部分人群可能出现头晕、心悸、胸闷等“中餐馆综合征”症状。过量摄入也可能增加钠负担，不利于高血压患者。'
+  },
+  '乳酸': {
+    '用途': '酸度调节剂和防腐剂，用于饮料、乳制品、腌制品等食品。',
+    '危害': '一般较为安全，但大量摄入可能引起胃酸过多或电解质紊乱，尤其在肾功能不全者中需谨慎。'
+  }
     };
 
     const scienceHtml = `
       <div class="science-block">
-        <div class="science-title">场景举例：腌制肉类与亚硝酸盐的风险</div>
+        <div class="science-title">注：腌制肉类与亚硝酸盐的风险</div>
         <div><strong>背景：</strong>我们在日常生活中吃到的腌肉、香肠、火腿等加工肉制品，有时会加入<mark>硝酸钠（NaNO₃）</mark>作为防腐剂和保色剂。</div>
         <ul class="science-list">
           <li>✅ <strong>硝酸钠的作用：</strong></li>
@@ -359,7 +367,7 @@
         html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
         resultBox.innerHTML = html;
       } else {
-        resultBox.innerHTML = "未识别相关材料，鱼丸还在采集中...";
+        resultBox.innerHTML = "未识别相关信息，鱼丸还在采集中...";
       }
     }
   </script>
