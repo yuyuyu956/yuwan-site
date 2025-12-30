@@ -1,278 +1,258 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>鱼丸百科 | 材质与添加剂成分查询</title>
-  <style>
-    :root {
-      --primary-color: #1976d2;
-      --bg-color: #f4f7f9;
-      --safe-color: #2ecc71;
-      --caution-color: #f1c40f;
-      --danger-color: #e74c3c;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鱼丸百科 | 生活材质与食品添加剂百科查询</title>
+    <style>
+        :root {
+            --primary: #1976d2;
+            --safe: #2ecc71;
+            --caution: #f1c40f;
+            --danger: #e74c3c;
+            --text: #2c3e50;
+            --bg: #f0f2f5;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background: var(--bg-color);
-      margin: 0;
-      padding: 20px;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+        .container { max-width: 800px; margin: 0 auto; }
 
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--primary); margin-bottom: 8px; font-size: 2.2rem; }
+        .subtitle { color: #64748b; font-size: 0.95rem; }
 
-    h1 { color: #2c3e50; font-size: 2rem; margin-bottom: 10px; }
-    .subtitle { color: #666; font-size: 1rem; }
+        /* 搜索框设计 */
+        .search-box-wrapper {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
 
-    /* 搜索框样式 */
-    .search-section {
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      margin-bottom: 30px;
-    }
+        .search-group { margin-bottom: 20px; }
+        .search-group:last-child { margin-bottom: 0; }
+        label { display: block; font-weight: 700; margin-bottom: 10px; color: var(--primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1); }
 
-    .input-group {
-      margin-bottom: 20px;
-    }
+        /* 卡片渲染 */
+        .results-container { display: grid; gap: 15px; }
 
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #eef2f6;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(0,0,0,0.08); }
 
-    input {
-      width: 100%;
-      padding: 12px 20px;
-      font-size: 16px;
-      border: 2px solid #eee;
-      border-radius: 10px;
-      box-sizing: border-box;
-      transition: border-color 0.3s;
-    }
+        .card-safe { border-left: 8px solid var(--safe); }
+        .card-caution { border-left: 8px solid var(--caution); }
+        .card-danger { border-left: 8px solid var(--danger); }
 
-    input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-    }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .card-title { font-size: 1.4rem; font-weight: 800; margin: 0; color: #1e293b; }
+        .type-tag { font-size: 0.75rem; padding: 5px 12px; background: #f1f5f9; border-radius: 20px; color: #475569; font-weight: 600; }
 
-    /* 结果卡片样式 */
-    .result-grid {
-      display: grid;
-      gap: 20px;
-    }
+        .info-item { font-size: 0.95rem; margin-bottom: 8px; display: flex; align-items: flex-start; }
+        .info-label { font-weight: 700; color: #94a3b8; width: 85px; flex-shrink: 0; }
+        .info-value { color: #334155; }
 
-    .result-card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
-      border: 1px solid #eef2f6;
-      position: relative;
-      overflow: hidden;
-    }
+        .risk-alert { 
+            background: #fff5f5; 
+            border: 1px dashed #feb2b2; 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-top: 15px;
+            color: #9b2c2c;
+            font-size: 0.9rem;
+        }
 
-    .result-card:hover { transform: translateY(-3px); }
+        .note-tip {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            font-size: 0.85rem;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border-left: 4px solid #3182ce;
+        }
 
-    .card-safe { border-left: 6px solid var(--safe-color); }
-    .card-caution { border-left: 6px solid var(--caution-color); }
-    .card-danger { border-left: 6px solid var(--danger-color); }
+        footer {
+            margin-top: 60px;
+            padding: 30px;
+            font-size: 0.8rem;
+            color: #a0aec0;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 15px;
-    }
-
-    .card-title { font-size: 1.3rem; margin: 0; color: #2c3e50; }
-    .card-tag {
-      background: #f0f4f8;
-      color: #546e7a;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.8em;
-    }
-
-    .card-info { margin-bottom: 8px; font-size: 0.95rem; }
-    .card-label { font-weight: bold; color: #7f8c8d; margin-right: 8px; }
-
-    .card-risk-box {
-      background: #fff9f9;
-      border: 1px dashed #ffcdd2;
-      border-radius: 8px;
-      padding: 12px;
-      margin-top: 15px;
-      color: #c62828;
-      font-size: 0.9rem;
-    }
-
-    .card-note {
-      background: #e3f2fd;
-      color: #1976d2;
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-size: 0.85rem;
-      font-style: italic;
-    }
-
-    footer {
-      margin-top: 60px;
-      padding: 30px;
-      border-top: 1px solid #ddd;
-      font-size: 0.85rem;
-      color: #888;
-    }
-
-    .search-ok { text-align: center; color: #aaa; margin-top: 20px; font-family: monospace; }
-  </style>
+        .ok-icon { margin-top: 30px; text-align: center; font-size: 1.2rem; color: #cbd5e0; }
+    </style>
 </head>
 <body>
 
 <div class="container">
-  <header>
-    <h1>🔍 鱼丸百科</h1>
-    <p class="subtitle">查成分、看材质、懂健康。您的生活选材辅助小助手。</p>
-  </header>
+    <header>
+        <h1>🔍 鱼丸百科</h1>
+        <p class="subtitle">让生活清清楚楚，让选材明明白白</p>
+    </header>
 
-  <div class="search-section">
-    <div class="input-group">
-      <label>🛡️ 材料与物品查询</label>
-      <input type="text" id="materialInput" placeholder="输入：PC、304不锈钢、安全帽、水杯..." oninput="searchMaterial()">
+    <div class="search-box-wrapper">
+        <div class="search-group">
+            <label>生活物品 / 材质特性</label>
+            <input type="text" id="mSearch" placeholder="搜索水杯、安全帽、PC、304等..." oninput="handleSearch('m')">
+        </div>
+        <div class="search-group">
+            <label>配料表 / 食品添加剂</label>
+            <input type="text" id="aSearch" placeholder="搜索亚硝酸钠、山梨酸钾、代糖等..." oninput="handleSearch('a')">
+        </div>
     </div>
-    <div class="input-group">
-      <label>🧪 食品添加剂查询</label>
-      <input type="text" id="additiveInput" placeholder="输入：亚硝酸钠、脱氢乙酸钠、赤藓糖醇..." oninput="searchAdditive()">
-    </div>
-  </div>
 
-  <div id="results" class="result-grid"></div>
+    <div id="resultArea" class="results-container"></div>
 
-  <footer id="footer">
-    <p><strong>⚖️ 免责声明：</strong></p>
-    <p>1. 数据参考 GB 2760-2014 及官方解读，仅供科普参考，不作为法律依据。</p>
-    <p>2. 请以产品包装实际配料表为准。3. 发现错误请前往 GitHub 提交 Issue。</p>
-    <p style="text-align: center; margin-top: 20px;">© 2025 Yuwan.site</p>
-  </footer>
+    <footer>
+        <p><strong>声明：</strong>本站数据由开发者“鱼丸”整理自 GB 2760-2014 标准及科普文献，不具医疗效力。</p>
+        <p>© 2025 Yuwan.site | GitHub Hosted</p>
+    </footer>
 </div>
 
 <script>
-// 这里内置了 90+ 条添加剂数据和 20+ 条材料数据
-const db = {
-  additives: [
-    { name: "脱氢乙酸钠", alias: ["Sodium Dehydroacetate"], type: "防腐剂", standard_limit: "2025年2月起面包、糕点禁加", usage: "曾广泛用于月饼、烘焙、豆制品。", risk: "长期摄入对肝肾有潜在负担，现已被国标收紧限制。", safety_level: "danger", note: "购买长保质期面包时，注意看标签是否含有此项。" },
-    { name: "赤藓糖醇", alias: ["Erythritol"], type: "甜味剂", standard_limit: "适量使用", usage: "无糖饮料、代糖甜品。", risk: "极低热量，不升糖。但超过 50g 摄入可能导致肠鸣或腹泻。", safety_level: "safe" },
-    { name: "亚硝酸钠", alias: ["Sodium Nitrite"], type: "发色剂/防腐剂", standard_limit: "腌腊肉制品 ≤0.15g/kg", usage: "火腿、香肠、午餐肉。", risk: "摄入过量具有毒性，且可能在体内转化成亚硝胺（致癌物）。", safety_level: "danger", note: "建议配合富含维C的蔬果食用，可抑制亚硝胺生成。" },
-    { name: "阿斯巴甜", alias: ["Aspartame"], type: "甜味剂", standard_limit: "饮料类 0.6g/kg", usage: "无糖可乐、口香糖。", risk: "含苯丙氨酸，苯酮尿症患者禁用。世卫列为2B类可能致癌物。", safety_level: "caution" },
-    { name: "山梨酸钾", alias: ["Potassium Sorbate"], type: "防腐剂", standard_limit: "肉制品/调味品 1.0g/kg", usage: "果酱、乳制品、饮料。", risk: "安全性极高，参与人体正常代谢排出。", safety_level: "safe" },
-    { name: "苯甲酸钠", alias: ["Sodium Benzoate"], type: "防腐剂", standard_limit: "碳酸饮料 0.2g/kg", usage: "调味品、低端饮料。", risk: "毒性略高于山梨酸钾，过量摄入加重肝脏排毒负担。", safety_level: "caution" },
-    { name: "日落黄", alias: ["Sunset Yellow"], type: "着色剂", standard_limit: "饮料 0.1g/kg", usage: "橙色饮料、糖果。", risk: "合成色素。可能引起过敏或影响儿童注意力。", safety_level: "caution" },
-    { name: "姜黄素", alias: ["Curcumin"], type: "天然着色剂", standard_limit: "适量使用", usage: "咖喱、方便面面饼。", risk: "天然提取，安全性极高。", safety_level: "safe" },
-    { name: "黄原胶", alias: ["Xanthan Gum"], type: "增稠剂", standard_limit: "适量使用", usage: "蚝油、酸奶、沙拉酱。", risk: "发酵产生，安全性极高，还具有膳食纤维特性。", safety_level: "safe" },
-    { name: "卡拉胶", alias: ["Carrageenan"], type: "增稠剂", standard_limit: "适量使用", usage: "冰淇淋、果冻。", risk: "海藻提取。大量摄入对敏感肠道可能有刺激。", safety_level: "safe" },
-    { name: "TBHQ", alias: ["特丁基对苯二酚"], type: "抗氧化剂", standard_limit: "油脂制品 0.2g/kg", usage: "食用油、方便面油包。", risk: "合成抗氧化剂。虽然安全但建议少吃深度油炸食品。", safety_level: "caution" },
-    { name: "谷氨酸钠", alias: ["味精", "MSG"], type: "增味剂", standard_limit: "适量使用", usage: "各类菜肴、鸡精。", risk: "天然鲜味。含钠，高血压患者需控量。", safety_level: "safe" },
-    { name: "三聚磷酸钠", alias: ["STPP"], type: "水分保持剂", standard_limit: "肉制品 5.0g/kg", usage: "肉丸、虾仁。", risk: "磷酸盐。过量摄入影响钙吸收。", safety_level: "caution" },
-    { name: "明矾", alias: ["硫酸铝钾"], type: "膨松剂", standard_limit: "铝残留 ≤100mg/kg", usage: "油条、粉丝。", risk: "含铝，过量摄入损害神经系统。建议选择无铝配方。", safety_level: "danger" },
-    { name: "三氯蔗糖", alias: ["Sucralose"], type: "甜味剂", standard_limit: "适量使用", usage: "饮料、烘焙。", risk: "蔗糖衍生物，不参与代谢，耐热性好，非常安全。", safety_level: "safe" },
-    { name: "二氧化硅", alias: ["抗结剂"], type: "抗结剂", standard_limit: "粉末食品 15g/kg", usage: "植脂末、食盐。", risk: "防止结块，不被吸收，原样排出，安全性高。", safety_level: "safe" },
-    { name: "丙酸钙", alias: ["Calcium Propionate"], type: "防腐剂", standard_limit: "面包 2.5g/kg", usage: "预包装面包。", risk: "人体可代谢，防止面包发霉，非常安全。", safety_level: "safe" },
-    { name: "甜蜜素", alias: ["Cyclamate"], type: "甜味剂", standard_limit: "果汁/蜜饯 0.65g/kg", usage: "蜜饯、低端白酒。", risk: "多国禁用，中国严格限量，不建议作为主要代糖选择。", safety_level: "caution" },
-    { name: "红曲红", alias: ["Monascus"], type: "天然着色剂", standard_limit: "适量使用", usage: "熟肉、腐乳。", risk: "发酵来源，具有一定保健潜力，安全。", safety_level: "safe" },
-    { name: "安赛蜜", alias: ["Acesulfame K"], type: "甜味剂", standard_limit: "饮料 0.3g/kg", usage: "无糖饮料。", risk: "人工合成，不参与代谢，安全性良好。", safety_level: "safe" }
-    // ... 此处省略其余 70 条以节省空间，你可以在 data.json 中继续扩充
-  ],
-  materials: [
-    { name: "304不锈钢", type: "金属/合金", composition: "Fe, 18% Cr, 8% Ni", features: "耐腐蚀，食品级餐具首选。", risk: "不宜长期盛放强酸（如柠檬汁）或强碱物质。", safety_level: "safe" },
-    { name: "PC (聚碳酸酯)", type: "塑料", composition: "双酚A聚合", features: "透明、耐撞击、耐温120°C。", risk: "老化后可能释放双酚A（BPA），建议避开高温使用。", safety_level: "caution" },
-    { name: "Tritan (共聚酯)", type: "塑料", composition: "Eastman 专利材质", features: "不含双酚A，清澈透明，抗冲击。", risk: "耐温约 100°C 左右，安全性极高。", safety_level: "safe" },
-    { name: "PP (聚丙烯)", type: "塑料", composition: "聚丙烯", features: "耐热130°C，唯一可入微波炉材质。", risk: "透明度稍逊，安全性极高。", safety_level: "safe" },
-    { name: "PPSU (聚亚苯基砜)", type: "塑料", composition: "高性能聚合物", features: "耐热180°C，呈琥珀色，奶瓶界爱马仕。", risk: "除了贵，基本没缺点。", safety_level: "safe" },
-    { name: "ABS", type: "塑料", composition: "丙烯腈-丁二烯-苯乙烯", features: "韧性强，常用于安全帽、乐高。", risk: "不耐高温，不建议接触高温食物。", safety_level: "caution" }
-  ]
+const data = {
+    materials: [
+        { name: "304不锈钢", type: "金属/不锈钢", comp: "Fe, 18%Cr, 8%Ni", use: "餐具、水杯、厨具", risk: "常见食品级钢材。避免长期存放强酸强碱液体（如柠檬汁、苏打）。", safety: "safe" },
+        { name: "316不锈钢", type: "金属/不锈钢", comp: "Fe, 17%Cr, 12%Ni, 2%Mo", use: "高端保温杯、医疗器械", risk: "比304更耐盐碱腐蚀。除了贵没有缺点。", safety: "safe" },
+        { name: "PC (聚碳酸酯)", type: "塑料/7号", comp: "双酚A聚合物", use: "桶装水、行李箱、太空杯", risk: "不耐高温。受热超过80°C或老化可能释放双酚A，建议避开沸水。", safety: "caution" },
+        { name: "PP (聚丙烯)", type: "塑料/5号", comp: "聚丙烯", use: "微波炉餐盒、奶瓶、饮水管", risk: "耐热130°C，化学稳定性极好。目前最推荐的塑料食品容器材质。", safety: "safe" },
+        { name: "Tritan", type: "塑料/新材质", comp: "共聚酯", use: "运动水瓶、婴幼儿用品", risk: "不含双酚A，透明度极高且抗冲击。注意耐温通常在100°C以内。", safety: "safe" },
+        { name: "ABS", type: "塑料", comp: "丙烯腈-丁二烯-苯乙烯", use: "安全帽、乐高玩具、家电外壳", risk: "结构坚固但不耐热，绝不能接触高温食品。", safety: "caution" },
+        { name: "玻璃钢 (FRP)", type: "复合材料", comp: "玻璃纤维+树脂", use: "工业安全帽、管道", risk: "极高强度且绝缘，但受到剧烈撞击后内部纤维受损需更换。", safety: "safe" }
+    ],
+    additives: [
+        // 防腐/甜味
+        { name: "脱氢乙酸钠", alias: ["Sodium Dehydroacetate"], type: "防腐剂", std: "2025年起部分品类禁用", use: "面包、糕点、黄油", risk: "长期过量摄入可能对肝肾有累积性负担，目前国标已收紧限制。", safety: "danger", note: "购买长保质期食品请尽量避开此成分。" },
+        { name: "赤藓糖醇", alias: ["Erythritol"], type: "甜味剂", std: "按需添加", use: "代糖饮料、无糖食品", risk: "天然代糖，不升糖。过量（＞50g）可能引起渗透性腹泻。", safety: "safe" },
+        { name: "亚硝酸钠", alias: ["Sodium Nitrite"], type: "发色/防腐剂", std: "残留量 ≤30mg/kg", use: "腊肉、火腿、培根", risk: "摄入过量有毒。胃酸环境下可能转化为致癌物亚硝胺。", safety: "danger", note: "食用此类肉品时，建议多吃含维C的水果以阻断亚硝胺。" },
+        { name: "山梨酸钾", alias: ["Potassium Sorbate"], type: "防腐剂", std: "调味品 1.0g/kg", use: "饮料、酸奶、果酱", risk: "安全性很高，被人体代谢后分解为水和CO2。", safety: "safe" },
+        { name: "阿斯巴甜", alias: ["Aspartame"], type: "甜味剂", std: "饮料 0.6g/kg", use: "无糖可乐、口香糖", risk: "苯酮尿症患者绝对禁用。由于致癌性争议，建议控制摄入。", safety: "caution" },
+        
+        // 着色剂
+        { name: "日落黄", alias: ["Sunset Yellow"], type: "合成色素", std: "0.1g/kg", use: "果汁、糖果、蜜饯", risk: "合成色素。可能导致过敏或诱发儿童多动症，需谨慎。", safety: "caution" },
+        { name: "姜黄素", alias: ["Curcumin"], type: "天然色素", std: "适量使用", use: "咖喱、泡面油包", risk: "天然提取，安全性极高。", safety: "safe" },
+        { name: "亮蓝", alias: ["Brilliant Blue"], type: "合成色素", std: "0.025g/kg", use: "功能饮料、蓝色糖果", risk: "合成色素，严格按量添加安全，但代谢较慢。", safety: "caution" },
+        
+        // 增稠剂
+        { name: "黄原胶", alias: ["Xanthan Gum"], type: "增稠剂", std: "适量使用", use: "蚝油、沙拉酱、面条", risk: "微生物发酵产生。不仅安全，还可作为可溶性膳食纤维。", safety: "safe" },
+        { name: "卡拉胶", alias: ["Carrageenan"], type: "增稠剂", std: "适量使用", use: "冰淇淋、果冻、肉制品", risk: "从海藻提取。部分敏感体质可能引起轻微肠道炎症。", safety: "safe" },
+        
+        // 抗氧化/其他
+        { name: "TBHQ", alias: ["特丁基对苯二酚"], type: "抗氧化剂", std: "0.2g/kg", use: "方便面油包、饼干、食用油", risk: "防止油脂酸败。虽然合规，但不建议长期高频食用。", safety: "caution" },
+        { name: "谷氨酸钠", alias: ["味精", "MSG"], type: "增味剂", std: "适量使用", use: "调味粉、各类鲜食", risk: "鲜味来源。主要风险在于钠含量高，需控制食盐摄入。", safety: "safe" },
+        { name: "三聚磷酸钠", alias: ["STPP"], type: "保水剂", std: "5.0g/kg", use: "冷冻虾仁、肉丸、火腿", risk: "磷酸盐。过量摄入会干扰人体对钙的吸收。", safety: "caution" },
+        { name: "安赛蜜", alias: ["Acesulfame K"], type: "甜味剂", std: "0.3g/kg", use: "饮料、甜点", risk: "不参与代谢，原样排出，安全性较好。", safety: "safe" },
+        { name: "单、双甘油脂肪酸酯", alias: ["乳化剂"], type: "乳化剂", std: "适量使用", use: "面包、冰淇淋、巧克力", risk: "常见的乳化成分，安全性极高。", safety: "safe" }
+    ]
 };
 
-// 物品关联映射（如搜“水杯”显示相关材质）
-const itemMap = {
-  "水杯": ["PC (聚碳酸酯)", "Tritan (共聚酯)", "PP (聚丙烯)", "304不锈钢"],
-  "奶瓶": ["PPSU (聚亚苯基砜)", "Tritan (共聚酯)", "PP (聚丙烯)", "玻璃"],
-  "安全帽": ["ABS", "PP (聚丙烯)", "PC (聚碳酸酯)"]
+// 物品关联（扩展搜索深度）
+const extraMap = {
+    "水杯": ["PC (聚碳酸酯)", "Tritan", "PP (聚丙烯)", "304不锈钢", "316不锈钢"],
+    "奶瓶": ["PP (聚丙烯)", "Tritan", "PPSU (聚亚苯基砜)"],
+    "代糖": ["赤藓糖醇", "阿斯巴甜", "安赛蜜", "三氯蔗糖", "甜蜜素"],
+    "色素": ["日落黄", "亮蓝", "姜黄素", "胭脂红", "柠檬黄"]
 };
 
-function searchMaterial() {
-  const query = document.getElementById('materialInput').value.trim().toLowerCase();
-  const resultsDiv = document.getElementById('results');
-  if (!query) { resultsDiv.innerHTML = ""; return; }
+function handleSearch(mode) {
+    const mQ = document.getElementById('mSearch').value.trim().toLowerCase();
+    const aQ = document.getElementById('aSearch').value.trim().toLowerCase();
+    const area = document.getElementById('resultArea');
+    
+    // 互斥搜索清空
+    if(mode === 'm' && mQ) document.getElementById('aSearch').value = '';
+    if(mode === 'a' && aQ) document.getElementById('mSearch').value = '';
 
-  let matches = db.materials.filter(m => 
-    m.name.toLowerCase().includes(query) || m.features.includes(query)
-  );
+    const query = mode === 'm' ? mQ : aQ;
+    if(!query) { area.innerHTML = ''; return; }
 
-  // 检查物品关联
-  for (let key in itemMap) {
-    if (query.includes(key)) {
-      itemMap[key].forEach(mName => {
-        const found = db.materials.find(mat => mat.name === mName);
-        if (found && !matches.includes(found)) matches.push(found);
-      });
+    let results = [];
+    if(mode === 'm') {
+        results = data.materials.filter(i => i.name.toLowerCase().includes(query) || i.use.includes(query));
+        for(let key in extraMap) {
+            if(query.includes(key)) {
+                extraMap[key].forEach(name => {
+                    const found = data.materials.find(m => m.name === name);
+                    if(found && !results.includes(found)) results.push(found);
+                });
+            }
+        }
+    } else {
+        results = data.additives.filter(i => 
+            i.name.toLowerCase().includes(query) || 
+            (i.alias && i.alias.some(al => al.toLowerCase().includes(query))) ||
+            i.type.includes(query)
+        );
+        // 代糖/色素等分类联想
+        for(let key in extraMap) {
+            if(query.includes(key)) {
+                extraMap[key].forEach(name => {
+                    const found = data.additives.find(a => a.name === name);
+                    if(found && !results.includes(found)) results.push(found);
+                });
+            }
+        }
     }
-  }
-
-  render(matches);
-}
-
-function searchAdditive() {
-  const query = document.getElementById('additiveInput').value.trim().toLowerCase();
-  const resultsDiv = document.getElementById('results');
-  if (!query) { resultsDiv.innerHTML = ""; return; }
-
-  const matches = db.additives.filter(a => 
-    a.name.toLowerCase().includes(query) || 
-    (a.alias && a.alias.some(al => al.toLowerCase().includes(query))) ||
-    a.type.includes(query)
-  );
-
-  render(matches);
+    render(results);
 }
 
 function render(list) {
-  const container = document.getElementById('results');
-  if (list.length === 0) {
-    container.innerHTML = "<p style='text-align:center;color:#999;'>未识别相关信息，鱼丸还在拼命采集...</p>";
-    return;
-  }
+    const area = document.getElementById('resultArea');
+    if(list.length === 0) {
+        area.innerHTML = '<div style="text-align:center; padding:40px; color:#a0aec0;">未识别到相关条目，鱼丸努力采集中...</div>';
+        return;
+    }
 
-  container.innerHTML = list.map(item => `
-    <div class="result-card card-${item.safety_level || 'safe'}">
-      <div class="card-header">
-        <h2 class="card-title">${item.name}</h2>
-        <span class="card-tag">${item.type}</span>
-      </div>
-      <div class="card-info"><span class="card-label">别名/成分:</span>${item.alias ? item.alias.join(', ') : (item.composition || '未知')}</div>
-      <div class="card-info"><span class="card-label">标准/特性:</span>${item.standard_limit || item.features}</div>
-      <div class="card-info"><span class="card-label">常见用途:</span>${item.usage || '详见包装'}</div>
-      <div class="card-risk-box">
-        <strong>⚠️ 提醒：</strong>${item.risk}
-      </div>
-      ${item.note ? `<div class="card-note">📌 提示：${item.note}</div>` : ''}
-    </div>
-  `).join('') + `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
+    area.innerHTML = list.map(item => `
+        <div class="card card-${item.safety}">
+            <div class="card-header">
+                <h3 class="card-title">${item.name}</h3>
+                <span class="type-tag">${item.type}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">成分/别名:</span>
+                <span class="info-value">${item.alias ? item.alias.join(', ') : (item.comp || '暂无')}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">用途/标准:</span>
+                <span class="info-value">${item.use} | ${item.std || item.limit || '按需添加'}</span>
+            </div>
+            <div class="risk-alert">
+                <strong>💡 深度解析：</strong>${item.risk}
+            </div>
+            ${item.note ? `<div class="note-tip">📌 鱼丸小贴士：${item.note}</div>` : ''}
+        </div>
+    `).join('') + '<div class="ok-icon">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>查询完成</div>';
 }
 </script>
 
