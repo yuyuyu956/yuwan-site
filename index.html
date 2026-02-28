@@ -11,50 +11,77 @@
   
   <style>
     /* --- 全局与基础样式 --- */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
     body {
       font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-      padding: 2em;
-      background: #e3f2fd;
+      background: #e3f2fd; /* 统一的浅蓝色背景 */
       color: #333;
-      max-width: 900px;
-      margin: 0 auto;
     }
 
-    /* --- ✨ 顶部品牌区样式 ✨ --- */
+    /* --- 页面整体布局 --- */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .content-wrapper {
+      flex: 1;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    /* --- ✨ 优化后的顶部品牌区样式 ✨ --- */
     .site-header {
       display: flex;
       align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
+      margin-bottom: 50px;
+      padding-bottom: 25px;
       border-bottom: 2px dashed #bbdefb;
     }
     .site-logo {
-      width: 80px;
-      height: 80px;
-    /* 修改了这里的名字和描边样式 */
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      margin-right: 25px;
+      mix-blend-mode: multiply; /* 完美去除Logo白底 */
+    }
+    .site-branding {
+      display: flex;
+      flex-direction: column;
+    }
     .site-name {
-      font-size: 2.2em; /* 稍微放大一点点更霸气 */
+      font-size: 2.4em;
       font-weight: bold;
-      color: #60b9cd; /* 白色字体 */
-      /* 神奇的CSS描边属性 */
-      
+      color: #0288d1; /* 换成了与Logo呼应的深天蓝色 */
       letter-spacing: 2px;
-      /* 加一点非常淡的阴影，让它在浅色背景上更自然 */
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.1); 
+      /* 纯白色实心投影 + 极淡的模糊阴影，立体又柔和 */
+      text-shadow: 2px 2px 0px #ffffff, 4px 4px 8px rgba(0,0,0,0.05); 
     }
 
     /* --- 搜索框与标题 --- */
-    h1, h2.main-title {
+    h1.main-title, h1.section-title {
       color: #2c3e50;
-      font-size: 1.5em;
-      margin-bottom: 0.8em;
+      font-size: 1.6em;
+      margin-top: 1.5em;
+      margin-bottom: 1em;
     }
+    h1.main-title {
+      margin-top: 0;
+    }
+    
     input {
-      padding: 12px 20px;
+      padding: 14px 20px;
       width: 100%;
-      max-width: 400px;
+      max-width: 450px;
       font-size: 16px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       box-sizing: border-box;
       border: 2px solid #90caf9;
       border-radius: 25px;
@@ -68,130 +95,113 @@
       transform: translateY(-1px);
     }
 
+    /* 表格与提示区 */
     table {
-      margin-top: 15px;
+      margin-top: 20px;
       border-collapse: collapse;
       width: 100%;
-      max-width: 600px;
+      max-width: 650px;
       background: #fff;
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
-    th, td {
-      padding: 10px 14px;
-      border: 1px solid #e0e0e0;
-      text-align: left;
-    }
-    th {
-      background-color: #f5f5f5;
-      color: #555;
-    }
-    #result, #additiveResult { margin-top: 20px; }
-    .section-title {
-      margin-top: 40px;
-      font-size: 1.5em;
-      color: #2c3e50;
-      font-weight: bold;
-    }
-    .tip { color: #666; margin-bottom: 8px; line-height: 1.5; }
+    th, td { padding: 12px 16px; border: 1px solid #e0e0e0; text-align: left; line-height: 1.5; }
+    th { background-color: #f5f5f5; color: #555; }
     
-    .compare-table {
-      margin-top: 16px;
-      border-collapse: collapse;
-      width: 100%;
-      max-width: 800px;
-      background: #fff;
-    }
-    .compare-table th, .compare-table td {
-      border: 1px solid #90caf9;
-      padding: 8px 12px;
-      text-align: left;
-    }
-    .compare-title {
-      font-size: 1.2em;
-      margin-top: 22px;
-      color: #1976d2;
-      font-weight: bold;
-    }
+    #result, #additiveResult { margin-top: 25px; }
+    .tip { color: #555; margin-bottom: 12px; line-height: 1.6; }
+    
+    .compare-table { max-width: 850px; }
+    .compare-title { font-size: 1.2em; margin-top: 25px; color: #1976d2; font-weight: bold; }
+    
     .science-block {
       background: #fffde7;
       border: 1px solid #ffe082;
-      padding: 18px 20px;
-      margin: 24px 0 32px 0;
+      padding: 20px 24px;
+      margin: 30px 0;
       border-radius: 8px;
       color: #444;
-      box-shadow: 0 2px 6px #ffe08233;
+      box-shadow: 0 2px 6px rgba(255, 224, 130, 0.3);
     }
     .science-block strong { color: #e65100; }
-    .science-title { font-size: 1.2em; color: #e65100; font-weight: bold; margin-bottom: 10px; }
-    .science-list { margin: 10px 0 18px 0; padding-left: 18px; }
-    .science-list li { margin-bottom: 4px; line-height: 1.7; }
+    .science-title { font-size: 1.3em; color: #e65100; font-weight: bold; margin-bottom: 12px; }
+    .science-list { margin: 12px 0 20px 0; padding-left: 20px; }
+    .science-list li { margin-bottom: 6px; line-height: 1.7; }
+    
     .search-ok {
-      margin-top: 18px;
+      margin-top: 25px;
       color: #1976d2;
       font-size: 1.2em;
       text-align: center;
       font-family: "Consolas", "Monaco", "monospace";
     }
 
-    /* --- 底部版权与声明 --- */
+    /* --- ✨ 统一底色的免责声明区 ✨ --- */
     .site-footer {
-      margin-top: 60px;
-      padding-top: 20px;
-      border-top: 1px dashed #bbdefb;
+      background-color: transparent; /* 去除独立背景，统一为浅蓝色 */
+      border-top: 2px dashed #bbdefb; /* 恢复虚线，更轻盈 */
+      padding: 40px 20px;
+    }
+    .footer-container {
+      max-width: 900px;
+      margin: 0 auto;
       color: #666;
-      font-size: 0.9em;
-      line-height: 1.6;
+      font-size: 0.95em;
+      line-height: 1.7;
     }
-    .site-footer .disclaimer {
-      background-color: #f5f5f5;
-      padding: 12px 16px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      border-left: 4px solid #90caf9;
-      font-size: 0.85em;
+    .footer-container .disclaimer {
+      background-color: #ffffff;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 5px solid #90caf9;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    .site-footer .copyright { text-align: center; font-size: 0.85em; }
-    .site-footer a { color: #1976d2; text-decoration: none; }
-    .site-footer a:hover { text-decoration: underline; }
+    .footer-container .copyright { text-align: center; font-size: 0.9em; margin-top: 20px; color: #888; }
+    .footer-container a { color: #1976d2; text-decoration: none; font-weight: bold; }
+    .footer-container a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
 
-  <header class="site-header">
-    <img src="logo.png" alt="鱼丸百科 Logo" class="site-logo">
-    <div class="site-branding">
-      <div class="site-name">鱼丸百科</div>
+<div class="page-wrapper">
+  <div class="content-wrapper">
+    <header class="site-header">
+      <img src="logo.png" alt="鱼丸百科 Logo" class="site-logo">
+      <div class="site-branding">
+        <div class="site-name">鱼丸百科</div>
       </div>
-  </header>
+    </header>
 
-  <h1 class="main-title">🔍 查询物品或材料成分（辅助选材）</h1>
-  <input type="text" id="searchBox" placeholder="请输入关键词，如 PC、PP、行李箱" oninput="searchMaterialSmart()">
-  <div id="result"></div>
-  
-  <h1 class="section-title">🔍 查询配料添加剂成分（健康参考）</h1>
-  <input type="text" id="additiveBox" placeholder="请输入关键词，如 亚硝酸钠、三氯蔗糖" oninput="searchAdditiveSmart()">
-  <div id="additiveResult"></div>
-  
-  <div class="tip" style="margin-top: 25px;">💡 <strong>提示：</strong>您可以这样输入，"PC材料耐高温吗"、"手机壳"、"筷子"或者直接搜索材质"ABS"、"PP"，或查询食品添加剂"谷氨酸钠"、"乳酸"等。</div>
-  <div class="tip">还在加紧完善中，敬请期待(ง🔥_🔥)ง ٩(ง˙∇˙)ว✧⁺⸜( •⌄• )⸝⁺✧ </div>
-
-  <footer class="site-footer">
-    <div class="disclaimer">
-      <strong>⚠️ 免责声明：</strong><br>
-      本站（yuwan.site）提供的所有数据（包括但不限于材料成分、物理特性、食品添加剂用途及健康影响等）均收集自网络开源资料与标准草案，<strong>仅供日常学习和参考之用</strong>。<br>
-      本站不保证数据的绝对准确性与实时性，亦<strong>不构成任何专业的医疗、营养、工程制造或法律建议</strong>。因使用本站信息造成的任何后果，本站不承担任何责任。
+    <h1 class="main-title">🔍 查询物品或材料成分（辅助选材）</h1>
+    <input type="text" id="searchBox" placeholder="请输入关键词，如 PC、PP、行李箱" oninput="searchMaterialSmart()">
+    <div id="result"></div>
+    
+    <h1 class="section-title">🔍 查询配料添加剂成分（健康参考）</h1>
+    <input type="text" id="additiveBox" placeholder="请输入关键词，如 亚硝酸钠、三氯蔗糖" oninput="searchAdditiveSmart()">
+    <div id="additiveResult"></div>
+    
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px dashed #bbdefb;">
+      <div class="tip">💡 <strong>温馨提示：</strong>您可以这样输入，"PC材料耐高温吗"、"手机壳"、"筷子"或者直接搜索材质"ABS"、"PP"，或查询食品添加剂"谷氨酸钠"、"乳酸"等。</div>
+      <div class="tip">🐠 鱼丸还在加紧完善数据库中，敬请期待！(ง🔥_🔥)ง ٩(ง˙∇˙)ว✧⁺⸜( •⌄• )⸝⁺✧ </div>
     </div>
-    <div class="copyright">
-      &copy; 2024-2026 鱼丸百科 (yuwan.site). 保留所有权利.
-      <span class="links">
-        | <a href="#" target="_blank">数据纠错与反馈</a>
-      </span>
+  </div> <footer class="site-footer">
+    <div class="footer-container">
+      <div class="disclaimer">
+        <strong style="color:#d32f2f;">⚠️ 免责声明：</strong><br>
+        本站（yuwan.site）提供的所有数据（包括但不限于材料成分、物理特性、食品添加剂用途及健康影响等）均收集自网络开源资料与标准草案，<strong>仅供日常学习和参考之用</strong>。<br>
+        本站不保证数据的绝对准确性与实时性，亦<strong>不构成任何专业的医疗、营养、工程制造或法律建议</strong>。因使用本站信息造成的任何后果，本站不承担任何责任。
+      </div>
+      <div class="copyright">
+        &copy; 2024-2026 鱼丸百科 (yuwan.site). 保留所有权利.
+        <span class="links">
+          | <a href="#" target="_blank">💬 数据纠错与反馈</a>
+        </span>
+      </div>
     </div>
   </footer>
-
-  <script>
+</div> <script>
     // ========= 数据和逻辑层保持完全一致 ==========
     const materials = {
       '304不锈钢': { '成分': { 'Fe': '余量', 'Cr': '18.0–20.0%', 'Ni': '8.0–10.5%', 'Mn': '≤2.0%', 'Si': '≤1.0%', 'C': '≤0.08%', 'P': '≤0.045%', 'S': '≤0.03%' }, '特性': '耐腐蚀性好，机械性能优，易加工，常用于餐具、医疗器械、筷子。耐高温至800°C。' },
@@ -215,22 +225,10 @@
       '石英玻璃': { '成分': { 'SiO2': '≥99.9%' }, '特性': '耐高温、耐腐蚀、光学性能好，适合实验室器材。' },
       '聚四氟乙烯（PTFE/特氟龙）': { '成分': { '聚四氟乙烯': '高分子聚合物' }, '特性': '耐高温、耐腐蚀、极低摩擦系数，常用于密封件、涂层、部分防水衣服。' },
       '消毒水': { '成分': { '次氯酸钠': 'NaClO 或含氯消毒剂', '乙醇': '部分消毒水含乙醇' }, '特性': '高效杀菌，常用于环境、物品表面消毒。使用需避免与酸性物质混合。' },
-      "HDPE材料": {
-        "成分": { "高密度聚乙烯": "高分子聚合物" },
-        "特性": "密度高、耐冲击、耐紫外线、化学稳定性好，是制造经济型安全帽、容器、管道常用材料。"
-      },
-      "玻璃钢（FRP）": {
-        "成分": { "玻璃纤维": "增强材料", "热固性树脂": "基体（如不饱和聚酯树脂）" },
-        "特性": "高强度、轻质、耐腐蚀、耐热，常用于工业安全帽、电力设备外壳。"
-      },
-      "碳纤维复合材料": {
-        "成分": { "碳纤维": "增强材料", "树脂": "基体" },
-        "特性": "极轻质但强度超高，抗疲劳和绝缘性好，广泛用于航空航天、安全防护领域。"
-      },
-      "Kevlar芳纶": {
-        "成分": { "对苯二胺与对苯二甲酰氯缩聚物": "芳香族聚酰胺（芳纶）" },
-        "特性": "强度高、抗切割、耐热，常用于防弹衣、防刺服和军用防护头盔。"
-      }
+      "HDPE材料": { "成分": { "高密度聚乙烯": "高分子聚合物" }, "特性": "密度高、耐冲击、耐紫外线、化学稳定性好，是制造经济型安全帽、容器、管道常用材料。" },
+      "玻璃钢（FRP）": { "成分": { "玻璃纤维": "增强材料", "热固性树脂": "基体（如不饱和聚酯树脂）" }, "特性": "高强度、轻质、耐腐蚀、耐热，常用于工业安全帽、电力设备外壳。" },
+      "碳纤维复合材料": { "成分": { "碳纤维": "增强材料", "树脂": "基体" }, "特性": "极轻质但强度超高，抗疲劳和绝缘性好，广泛用于航空航天、安全防护领域。" },
+      "Kevlar芳纶": { "成分": { "对苯二胺与对苯二甲酰氯缩聚物": "芳香族聚酰胺（芳纶）" }, "特性": "强度高、抗切割、耐热，常用于防弹衣、防刺服和军用防护头盔。" }
     };
 
     const cupCompare = [
@@ -322,10 +320,7 @@
     `;
 
     function shouldShowScience(query) {
-      const kw = [
-        '硝酸','亚硝酸','硝酸钠','亚硝酸钠','亚硝盐',
-        'nitrite','nitrate','腌肉','香肠','火腿','腌制肉','致癌物','亚硝胺'
-      ];
+      const kw = ['硝酸','亚硝酸','硝酸钠','亚硝酸钠','亚硝盐','nitrite','nitrate','腌肉','香肠','火腿','腌制肉','致癌物','亚硝胺'];
       return kw.some(k => query.includes(k));
     }
 
@@ -362,11 +357,11 @@
             <table>
               <tr><th>用途</th><td>${additive['用途']}</td></tr>
               <tr><th>过量危害</th><td>${additive['危害']}</td></tr>
-            </table><hr>`;
+            </table><hr style="border:0;border-top:1px dashed #bbdefb;margin:20px 0;">`;
         }
       });
       if (html) html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
-      resultBox.innerHTML = html || "未识别相关添加剂...";
+      resultBox.innerHTML = html || "<div class='tip'>未识别相关添加剂...</div>";
     }
 
     function fuzzyMatchMaterials(query) {
@@ -387,14 +382,10 @@
       for (let item in itemKeywords) {
         if (itemFuzzyKeywords[item]) {
           if (itemFuzzyKeywords[item].some(kw => query.includes(kw))) {
-            itemKeywords[item].forEach(k => {
-              if (!results.includes(k)) results.push(k);
-            });
+            itemKeywords[item].forEach(k => { if (!results.includes(k)) results.push(k); });
           }
         } else if (query.includes(item)) {
-          itemKeywords[item].forEach(k => {
-            if (!results.includes(k)) results.push(k);
-          });
+          itemKeywords[item].forEach(k => { if (!results.includes(k)) results.push(k); });
         }
       }
       return results;
@@ -411,10 +402,8 @@
         html = `<div class="compare-title">常见塑料水杯/奶瓶材质对比</div>
         <table class="compare-table">
           <tr><th>材质</th><th>主要特性</th><th>安全性</th></tr>`;
-        cupCompare.forEach(row => {
-          html += `<tr><td>${row.name}</td><td>${row.feature}</td><td>${row.safe}</td></tr>`;
-        });
-        html += `</table><div class="tip" style="margin-top:10px;">已查询常见塑料水杯/奶瓶材质PC、PP、PPSU、Tritan。</div>`;
+        cupCompare.forEach(row => { html += `<tr><td>${row.name}</td><td>${row.feature}</td><td>${row.safe}</td></tr>`; });
+        html += `</table><div class="tip" style="margin-top:15px;">已查询常见塑料水杯/奶瓶材质PC、PP、PPSU、Tritan。</div>`;
         ['PC材料','PP材料','PPSU材料','Tritan材料'].forEach(key=>{
           if(materials[key]) {
             html += `<h2>${key}</h2>
@@ -431,10 +420,8 @@
         html = `<div class="compare-title">常见安全帽/头盔材质对比</div>
         <table class="compare-table">
           <tr><th>材质</th><th>主要特性</th><th>安全性</th></tr>`;
-        helmetCompare.forEach(row => {
-          html += `<tr><td>${row.name}</td><td>${row.feature}</td><td>${row.safe}</td></tr>`;
-        });
-        html += `</table><div class="tip" style="margin-top:10px;">已查询常见安全帽材质ABS、PP、PC、PE、HDPE、FRP、碳纤维复合材料、Kevlar芳纶。</div>`;
+        helmetCompare.forEach(row => { html += `<tr><td>${row.name}</td><td>${row.feature}</td><td>${row.safe}</td></tr>`; });
+        html += `</table><div class="tip" style="margin-top:15px;">已查询常见安全帽材质ABS、PP、PC、PE、HDPE、FRP、碳纤维复合材料、Kevlar芳纶。</div>`;
         ['ABS塑料','PP材料','PC材料','PE材料',"HDPE", "玻璃钢（FRP）", "碳纤维复合材料", "Kevlar芳纶"].forEach(key=>{
           if(materials[key]) {
             html += `<h2>${key}</h2>
@@ -484,19 +471,17 @@
           html += `<div class="tip">已识别"${materialKey}"相关信息：</div>
             <h2>${materialKey} 的主要成分</h2>
             <table><tr><th>元素/组分</th><th>含量</th></tr>`;
-          for (let el in material['成分']) {
-            html += `<tr><td>${el}</td><td>${material['成分'][el]}</td></tr>`;
-          }
+          for (let el in material['成分']) { html += `<tr><td>${el}</td><td>${material['成分'][el]}</td></tr>`; }
           html += `</table>
             <h3>常见特性</h3>
-            <div>${material['特性']}</div><hr>`;
+            <div style="line-height:1.6; color:#444;">${material['特性']}</div><hr style="border:0;border-top:1px dashed #bbdefb;margin:20px 0;">`;
         });
         html += `<div class="search-ok">{\\____/}<br>(｡◕ˇ∀ˇ◕）<br>/つok<br>搜索已完成</div>`;
         resultBox.innerHTML = html;
       } else {
-        resultBox.innerHTML = "未识别相关材料，鱼丸还在采集中...";
+        resultBox.innerHTML = "<div class='tip'>未识别相关材料，鱼丸还在采集中...</div>";
       }
     }
-  </script>
+</script>
 </body>
 </html>
